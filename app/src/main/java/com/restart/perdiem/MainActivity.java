@@ -1,13 +1,19 @@
 package com.restart.perdiem;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -16,23 +22,101 @@ import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.restart.perdiem.adapter.StateAdapter;
+import com.restart.perdiem.adapter.ZipAdapter;
 
-public class MainActivity extends AppCompatActivity implements PlaceSelectionListener {
-    private static final int REQUEST_SELECT_PLACE = 1000;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+
+import static com.restart.perdiem.data.PlaceManager.STATES;
+
+public class MainActivity extends AppCompatActivity implements PlaceSelectionListener, StateAdapter.ListItemClickListener, ZipAdapter.ListItemClickListener {
+
+    private static final int REQUEST_SELECT_PLACE = 9876;
+
+    private StateAdapter mState;
+    private ZipAdapter mZip;
+    private SharedPreferences mSharedPreferences;
+    private RecyclerView mRecyclerState;
+    private RecyclerView mRecyclerZIP;
+    private FloatingActionButton mSearchButton;
+    private TextView mZipWarning;
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switchViews(item.getItemId());
+            return true;
+        }
+    };
+
+    private void switchViews(int itemId) {
+        switch (itemId) {
+            case R.id.navigation_home:
+                mSearchButton.hide();
+                mZipWarning.setVisibility(View.GONE);
+                mRecyclerState.setVisibility(View.GONE);
+                mRecyclerZIP.setVisibility(View.GONE);
+                break;
+            case R.id.navigation_code:
+                mSearchButton.show();
+
+                mRecyclerState.setVisibility(View.GONE);
+
+                if (mZip.getDataSet().size() > 0) {
+                    mRecyclerZIP.setVisibility(View.VISIBLE);
+                } else {
+                    mZipWarning.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.navigation_states:
+                mSearchButton.hide();
+                mZipWarning.setVisibility(View.GONE);
+                mRecyclerState.setVisibility(View.VISIBLE);
+                mRecyclerZIP.setVisibility(View.GONE);
+                break;
+            default:
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        LinearLayoutManager stateManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        DividerItemDecoration stateDecoration = new DividerItemDecoration(this, stateManager.getOrientation());
+        LinearLayoutManager zipManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        DividerItemDecoration zipDecoration = new DividerItemDecoration(this, zipManager.getOrientation());
+
+        mRecyclerState = (RecyclerView) findViewById(R.id.locationRecycler);
+        mRecyclerZIP = (RecyclerView) findViewById(R.id.zipRecycler);
+        mZipWarning = (TextView) findViewById(R.id.zipWarningTextView);
+        mSearchButton = (FloatingActionButton) findViewById(R.id.search);
+
+        mRecyclerState.setLayoutManager(stateManager);
+        mState = new StateAdapter(this);
+        mRecyclerState.setHasFixedSize(true);
+        mRecyclerState.setNestedScrollingEnabled(true);
+        mRecyclerState.addItemDecoration(stateDecoration);
+        mState.setDataSet(STATES);
+        mRecyclerState.setAdapter(mState);
+
+        mRecyclerZIP.setLayoutManager(zipManager);
+        mZip = new ZipAdapter(this);
+        mRecyclerZIP.setHasFixedSize(true);
+        mRecyclerZIP.setNestedScrollingEnabled(true);
+        mRecyclerZIP.addItemDecoration(zipDecoration);
+        mZip.setDataSet(new ArrayList<>(mSharedPreferences.getStringSet("zipCode", new LinkedHashSet<String>())));
+        mRecyclerZIP.setAdapter(mZip);
+
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).setFilter(new AutocompleteFilter.Builder().setCountry("US").build())
+                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .setFilter(new AutocompleteFilter.Builder().setCountry("US").build())
                             .build(MainActivity.this);
                     startActivityForResult(intent, REQUEST_SELECT_PLACE);
                 } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
@@ -40,38 +124,10 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
                 }
             }
         });
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onPlaceSelected(Place place) {
-
-    }
-
-    @Override
-    public void onError(Status status) {
-
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        switchViews(R.id.navigation_home);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -85,5 +141,20 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onPlaceSelected(Place place) {
+
+    }
+
+    @Override
+    public void onError(Status status) {
+
+    }
+
+    @Override
+    public void onListItemClick(int index) {
+
     }
 }
