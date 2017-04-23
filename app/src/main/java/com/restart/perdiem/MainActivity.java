@@ -1,9 +1,7 @@
 package com.restart.perdiem;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -26,21 +24,22 @@ import com.restart.perdiem.adapter.StateAdapter;
 import com.restart.perdiem.adapter.ZipAdapter;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 import static com.restart.perdiem.data.PlaceManager.STATES;
 
 public class MainActivity extends AppCompatActivity implements PlaceSelectionListener, StateAdapter.ListItemClickListener, ZipAdapter.ListItemClickListener {
 
+    private static final String TAG = ".MainActivity";
     private static final int REQUEST_SELECT_PLACE = 9876;
 
     private StateAdapter mState;
     private ZipAdapter mZip;
-    private SharedPreferences mSharedPreferences;
     private RecyclerView mRecyclerState;
     private RecyclerView mRecyclerZIP;
     private FloatingActionButton mSearchButton;
     private TextView mZipWarning;
+    private List<Place> mPlaces;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -58,14 +57,16 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
                 mRecyclerState.setVisibility(View.GONE);
                 mRecyclerZIP.setVisibility(View.GONE);
                 break;
-            case R.id.navigation_code:
+            case R.id.navigation_address:
                 mSearchButton.show();
 
                 mRecyclerState.setVisibility(View.GONE);
 
                 if (mZip.getDataSet().size() > 0) {
+                    mZipWarning.setVisibility(View.GONE);
                     mRecyclerZIP.setVisibility(View.VISIBLE);
                 } else {
+                    mRecyclerZIP.setVisibility(View.GONE);
                     mZipWarning.setVisibility(View.VISIBLE);
                 }
                 break;
@@ -83,12 +84,11 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mPlaces = new ArrayList<>();
 
         LinearLayoutManager stateManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         DividerItemDecoration stateDecoration = new DividerItemDecoration(this, stateManager.getOrientation());
         LinearLayoutManager zipManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        DividerItemDecoration zipDecoration = new DividerItemDecoration(this, zipManager.getOrientation());
 
         mRecyclerState = (RecyclerView) findViewById(R.id.locationRecycler);
         mRecyclerZIP = (RecyclerView) findViewById(R.id.zipRecycler);
@@ -98,17 +98,14 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
         mRecyclerState.setLayoutManager(stateManager);
         mState = new StateAdapter(this);
         mRecyclerState.setHasFixedSize(true);
-        mRecyclerState.setNestedScrollingEnabled(true);
         mRecyclerState.addItemDecoration(stateDecoration);
         mState.setDataSet(STATES);
         mRecyclerState.setAdapter(mState);
 
         mRecyclerZIP.setLayoutManager(zipManager);
         mZip = new ZipAdapter(this);
-        mRecyclerZIP.setHasFixedSize(true);
-        mRecyclerZIP.setNestedScrollingEnabled(true);
-        mRecyclerZIP.addItemDecoration(zipDecoration);
-        mZip.setDataSet(new ArrayList<>(mSharedPreferences.getStringSet("zipCode", new LinkedHashSet<String>())));
+        mRecyclerZIP.setHasFixedSize(false);
+        mZip.setDataSet(mPlaces);
         mRecyclerZIP.setAdapter(mZip);
 
         mSearchButton.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +142,10 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
 
     @Override
     public void onPlaceSelected(Place place) {
-
+        mPlaces.add(place);
+        mZipWarning.setVisibility(View.GONE);
+        mRecyclerZIP.setVisibility(View.VISIBLE);
+        mZip.notifyItemInserted(mPlaces.size() - 1);
     }
 
     @Override

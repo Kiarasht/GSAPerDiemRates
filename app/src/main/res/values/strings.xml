@@ -6,7 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_home">Home</string>
-    <string name="title_code">ZIP Code</string>
+    <string name="title_address">Address</string>
     <string name="title_states">States</string>
 
     <string name="zipWarning">No zip codes saved.\nClick search to begin.</string>

@@ -6,13 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.location.places.Place;
 import com.restart.perdiem.R;
 
 import java.util.List;
 
 public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHolder> {
     private final ListItemClickListener mOnListItemClickListener;
-    private List<String> mDataSet;
+    private List<Place> mDataSet;
 
     /**
      * Initialize adapter by bring some data to create onClick listeners and gain access to resources
@@ -31,14 +32,18 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
      * Managing our main recyclerview
      */
     class ZipAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final TextView mState;
+        private final TextView mName;
+        private final TextView mAddress;
+        private final TextView mLocation;
 
         /**
          * Setup the basic layout of a row in the recycler view. Create both the click and long click listeners.
          */
         ZipAdapterViewHolder(View view) {
             super(view);
-            mState = (TextView) view.findViewById(R.id.state);
+            mName = (TextView) view.findViewById(R.id.name);
+            mAddress = (TextView) view.findViewById(R.id.address);
+            mLocation = (TextView) view.findViewById(R.id.location);
             view.setOnClickListener(this);
         }
 
@@ -69,7 +74,9 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
      */
     @Override
     public void onBindViewHolder(ZipAdapterViewHolder holder, int position) {
-        holder.mState.setText(mDataSet.get(position));
+        holder.mName.setText(mDataSet.get(position).getName());
+        holder.mAddress.setText(mDataSet.get(position).getAddress());
+        holder.mLocation.setText(mDataSet.get(position).getLatLng().toString());
     }
 
     /**
@@ -88,7 +95,7 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
      *
      * @param dataSet the new data list
      */
-    public void setDataSet(List<String> dataSet) {
+    public void setDataSet(List<Place> dataSet) {
         mDataSet = dataSet;
         notifyDataSetChanged();
     }
@@ -98,7 +105,7 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
      *
      * @return the current data set
      */
-    public List<String> getDataSet() {
+    public List<Place> getDataSet() {
         return mDataSet;
     }
 }
