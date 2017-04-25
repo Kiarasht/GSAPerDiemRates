@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.restart.perdiem.adapter.StateAdapter.StateAdapterViewHolder;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -28,7 +29,7 @@ import java.util.List;
 
 import static com.restart.perdiem.data.PlaceManager.STATES;
 
-public class MainActivity extends AppCompatActivity implements PlaceSelectionListener, StateAdapter.ListItemClickListener, ZipAdapter.ListItemClickListener {
+public class MainActivity extends AppCompatActivity implements PlaceSelectionListener, StateAdapter.onListItemClick, ZipAdapter.onListItemClick {
 
     private static final String TAG = ".MainActivity";
     private static final int REQUEST_SELECT_PLACE = 9876;
@@ -154,7 +155,15 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
     }
 
     @Override
-    public void onListItemClick(int index) {
+    public void onStateListItemClick(int index) {
+        StateAdapterViewHolder holder = (StateAdapterViewHolder) mRecyclerState.findViewHolderForAdapterPosition(index);
+        if (holder != null) {
+            holder.expandableLayout.toggle();
+        }
+    }
+
+    @Override
+    public void onAddressListItemClick(int index) {
 
     }
 }

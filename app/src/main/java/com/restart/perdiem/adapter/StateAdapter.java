@@ -4,14 +4,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
 
 import com.restart.perdiem.R;
 
+import net.cachapa.expandablelayout.ExpandableLayout;
+
 import java.util.List;
 
 public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapterViewHolder> {
-    private final ListItemClickListener mOnListItemClickListener;
+    private final onListItemClick mOnListItemClickListener;
     private List<String> mDataSet;
 
     /**
@@ -19,18 +22,19 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
      *
      * @param listener for tapping on recyclerview
      */
-    public StateAdapter(ListItemClickListener listener) {
+    public StateAdapter(onListItemClick listener) {
         mOnListItemClickListener = listener;
     }
 
-    public interface ListItemClickListener {
-        void onListItemClick(int index);
+    public interface onListItemClick {
+        void onStateListItemClick(int index);
     }
 
     /**
      * Managing our main recyclerview
      */
-    class StateAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class StateAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final ExpandableLayout expandableLayout;
         private final TextView mState;
 
         /**
@@ -38,13 +42,16 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
          */
         StateAdapterViewHolder(View view) {
             super(view);
+
             mState = (TextView) view.findViewById(R.id.state);
+            expandableLayout = (ExpandableLayout) itemView.findViewById(R.id.expandable_layout);
+            expandableLayout.setInterpolator(new OvershootInterpolator());
             view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            mOnListItemClickListener.onListItemClick(getAdapterPosition());
+            mOnListItemClickListener.onStateListItemClick(getAdapterPosition());
         }
     }
 
@@ -91,5 +98,12 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
     public void setDataSet(List<String> dataSet) {
         mDataSet = dataSet;
         notifyDataSetChanged();
+    }
+
+    /**
+     * Get the current data list
+     */
+    public List<String> getDataSet() {
+        return mDataSet;
     }
 }

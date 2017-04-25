@@ -12,7 +12,7 @@ import com.restart.perdiem.R;
 import java.util.List;
 
 public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHolder> {
-    private final ListItemClickListener mOnListItemClickListener;
+    private final onListItemClick mOnListItemClickListener;
     private List<Place> mDataSet;
 
     /**
@@ -20,12 +20,12 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
      *
      * @param listener for tapping on recyclerview
      */
-    public ZipAdapter(ListItemClickListener listener) {
+    public ZipAdapter(onListItemClick listener) {
         mOnListItemClickListener = listener;
     }
 
-    public interface ListItemClickListener {
-        void onListItemClick(int index);
+    public interface onListItemClick {
+        void onAddressListItemClick(int index);
     }
 
     /**
@@ -49,7 +49,7 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
 
         @Override
         public void onClick(View v) {
-            mOnListItemClickListener.onListItemClick(getAdapterPosition());
+            mOnListItemClickListener.onAddressListItemClick(getAdapterPosition());
         }
     }
 
