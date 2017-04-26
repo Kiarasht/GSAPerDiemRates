@@ -1,73 +1,53 @@
 package com.restart.perdiem.adapter;
 
-import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
 
 import com.restart.perdiem.R;
 
-import net.cachapa.expandablelayout.ExpandableLayout;
-
 import java.util.List;
 
-public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapterViewHolder> {
+public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityAdapterViewHolder> {
     private final onListItemClick mOnListItemClickListener;
-    private List<String> mDataSet;
-    private Activity mActivity;
+    private List<String[]> mDataSet;
 
     /**
      * Initialize adapter by bring some data to create onClick listeners and gain access to resources
      *
-     * @param activity
      * @param listener for tapping on recyclerview
      */
-    public StateAdapter(Activity activity, onListItemClick listener) {
+    public CityAdapter(onListItemClick listener) {
         mOnListItemClickListener = listener;
-        mActivity = activity;
     }
 
     public interface onListItemClick {
-        void onStateListItemClick(int index);
+        void onCityListItemClick(int index);
     }
 
     /**
      * Managing our main recyclerview
      */
-    public class StateAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
-        public final TextView mState;
-        public CityAdapter mCity;
-        public final RecyclerView mRecyclerCity;
-        public final ExpandableLayout expandableLayout;
-        public int position;
+    public class CityAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final TextView mCity;
+        public final TextView mCounty;
 
         /**
          * Setup the basic layout of a row in the recycler view. Create both the click and long click listeners.
          */
-        StateAdapterViewHolder(View view) {
+        CityAdapterViewHolder(View view) {
             super(view);
 
-            mState = (TextView) view.findViewById(R.id.state);
-            mRecyclerCity = (RecyclerView) view.findViewById(R.id.cityRecycler);
-            expandableLayout = (ExpandableLayout) itemView.findViewById(R.id.expandable_layout);
-            expandableLayout.setInterpolator(new OvershootInterpolator());
+            mCity = (TextView) view.findViewById(R.id.city);
+            mCounty = (TextView) view.findViewById(R.id.county);
             view.setOnClickListener(this);
-        }
-
-        public void bind(int position) {
-            mState.setText(mDataSet.get(position));
-
-            this.position = position;
-            mState.setSelected(false);
-            expandableLayout.collapse(false);
         }
 
         @Override
         public void onClick(View v) {
-            mOnListItemClickListener.onStateListItemClick(getAdapterPosition());
+            mOnListItemClickListener.onCityListItemClick(getAdapterPosition());
         }
     }
 
@@ -79,8 +59,8 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
      * @return view to use and find our widgets
      */
     @Override
-    public StateAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new StateAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.state_row, parent, false));
+    public CityAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new CityAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.city_row, parent, false));
     }
 
     /**
@@ -91,8 +71,9 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
      * @param position position it is in the adapter
      */
     @Override
-    public void onBindViewHolder(StateAdapterViewHolder holder, int position) {
-        holder.bind(position);
+    public void onBindViewHolder(CityAdapterViewHolder holder, int position) {
+        holder.mCity.setText(mDataSet.get(position)[0]);
+        holder.mCounty.setText(mDataSet.get(position)[1]);
     }
 
     /**
@@ -111,7 +92,7 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
      *
      * @param dataSet the new data list
      */
-    public void setDataSet(List<String> dataSet) {
+    public void setDataSet(List<String[]> dataSet) {
         mDataSet = dataSet;
         notifyDataSetChanged();
     }
@@ -119,7 +100,7 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
     /**
      * Get the current data list
      */
-    public List<String> getDataSet() {
+    public List<String[]> getDataSet() {
         return mDataSet;
     }
 }
