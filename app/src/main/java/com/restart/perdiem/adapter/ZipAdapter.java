@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.location.places.Place;
@@ -34,7 +35,8 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
     class ZipAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView mName;
         private final TextView mAddress;
-        private final TextView mLocation;
+        private final ImageView[] mPrice;
+        //private final TextView mLocation;
 
         /**
          * Setup the basic layout of a row in the recycler view. Create both the click and long click listeners.
@@ -43,7 +45,15 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
             super(view);
             mName = (TextView) view.findViewById(R.id.name);
             mAddress = (TextView) view.findViewById(R.id.address);
-            mLocation = (TextView) view.findViewById(R.id.location);
+
+            mPrice = new ImageView[5];
+            mPrice[0] = (ImageView) view.findViewById(R.id.free);
+            mPrice[1] = (ImageView) view.findViewById(R.id.inexpensive);
+            mPrice[2] = (ImageView) view.findViewById(R.id.moderate);
+            mPrice[3] = (ImageView) view.findViewById(R.id.expensive);
+            mPrice[4] = (ImageView) view.findViewById(R.id.veryExpensive);
+
+            //mLocation = (TextView) view.findViewById(R.id.location);
             view.setOnClickListener(this);
         }
 
@@ -76,7 +86,14 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
     public void onBindViewHolder(ZipAdapterViewHolder holder, int position) {
         holder.mName.setText(mDataSet.get(position).getName());
         holder.mAddress.setText(mDataSet.get(position).getAddress());
-        holder.mLocation.setText(mDataSet.get(position).getLatLng().toString());
+
+        int priceLevel = mDataSet.get(position).getPriceLevel();
+
+        for (int i = 0; i <= priceLevel; ++i) {
+            holder.mPrice[i].setVisibility(View.VISIBLE);
+        }
+
+        //holder.mLocation.setText(mDataSet.get(position).getLatLng().toString());
     }
 
     /**
