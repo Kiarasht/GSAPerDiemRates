@@ -10,5 +10,6 @@
     <string name="title_states">States</string>
 
     <string name="zipWarning">No zip codes saved.\nClick search to begin.</string>
+    <string name="save">Save</string>
 
 </resources>

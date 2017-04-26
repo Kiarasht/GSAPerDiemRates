@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
         StateAdapterViewHolder holder = (StateAdapterViewHolder) mRecyclerState.findViewHolderForAdapterPosition(selectedItem);
         if (holder != null) {
             holder.mState.setSelected(false);
-            holder.expandableLayout.collapse();
+            holder.mExpandableLayout.collapse();
         }
 
         holder = (StateAdapterViewHolder) mRecyclerState.findViewHolderForAdapterPosition(index);
@@ -171,15 +171,12 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
             selectedItem = UNSELECTED;
         } else {
             holder.mState.setSelected(true);
-            holder.expandableLayout.expand();
+            holder.mExpandableLayout.expand();
             selectedItem = index;
-
-            LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-            DividerItemDecoration decoration = new DividerItemDecoration(this, manager.getOrientation());
-            holder.mRecyclerCity.setLayoutManager(manager);
+            holder.mRecyclerCity.setLayoutManager(holder.mManager);
             holder.mCity = new CityAdapter(this);
             holder.mRecyclerCity.setHasFixedSize(true);
-            holder.mRecyclerCity.addItemDecoration(decoration);
+            holder.mRecyclerCity.addItemDecoration(holder.mDecoration);
             holder.mCity.setDataSet(STATE_CITY_MAPPER.get(holder.mState.getText().toString()));
             holder.mRecyclerCity.setAdapter(holder.mCity);
         }
@@ -192,6 +189,9 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
 
     @Override
     public void onCityListItemClick(int index) {
-
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
+                .add(R.id.container, new FullScreenDialog())
+                .addToBackStack(null).commit();
     }
 }

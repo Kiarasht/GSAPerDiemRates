@@ -1,6 +1,8 @@
 package com.restart.perdiem.adapter;
 
 import android.app.Activity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,9 +41,11 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
      */
     public class StateAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
         public final TextView mState;
+        public final LinearLayoutManager mManager;
+        public final DividerItemDecoration mDecoration;
         public CityAdapter mCity;
         public final RecyclerView mRecyclerCity;
-        public final ExpandableLayout expandableLayout;
+        public final ExpandableLayout mExpandableLayout;
         public int position;
 
         /**
@@ -52,8 +56,10 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
 
             mState = (TextView) view.findViewById(R.id.state);
             mRecyclerCity = (RecyclerView) view.findViewById(R.id.cityRecycler);
-            expandableLayout = (ExpandableLayout) itemView.findViewById(R.id.expandable_layout);
-            expandableLayout.setInterpolator(new OvershootInterpolator());
+            mExpandableLayout = (ExpandableLayout) itemView.findViewById(R.id.expandable_layout);
+            mExpandableLayout.setInterpolator(new OvershootInterpolator());
+            mManager = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
+            mDecoration = new DividerItemDecoration(mActivity, mManager.getOrientation());
             view.setOnClickListener(this);
         }
 
@@ -62,7 +68,7 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.StateAdapter
 
             this.position = position;
             mState.setSelected(false);
-            expandableLayout.collapse(false);
+            mExpandableLayout.collapse(false);
         }
 
         @Override
