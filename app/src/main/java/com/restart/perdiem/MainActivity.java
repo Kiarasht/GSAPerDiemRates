@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
     private FloatingActionButton mSearchButton;
     private TextView mZipWarning;
     private List<Place> mPlaces;
+    BottomNavigationView mNavigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -96,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
             }
         });
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mNavigation = (BottomNavigationView) findViewById(R.id.navigation);
+        mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         switchViews(R.id.navigation_home);
     }
 
@@ -188,10 +189,17 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
     }
 
     @Override
-    public void onCityListItemClick(int index) {
+    public void onCityListItemClick(int index, String city) {
+        Bundle bundle = new Bundle();
+        bundle.putString("title", city);
+        FullScreenDialog fullScreenDialog = new FullScreenDialog();
+        fullScreenDialog.setArguments(bundle);
+
+        mNavigation.setVisibility(View.GONE);
+
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
-                .add(R.id.container, new FullScreenDialog())
+                .add(R.id.container, fullScreenDialog)
                 .addToBackStack(null).commit();
     }
 }

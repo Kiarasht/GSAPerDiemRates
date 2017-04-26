@@ -2,7 +2,10 @@ package com.restart.perdiem;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,24 +13,38 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 
 public class FullScreenDialog extends DialogFragment {
+    private ActionBar mActionBar;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel);
 
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        mActionBar.setTitle(getArguments().getString("title"));
+
+        if (mActionBar != null) {
+            mActionBar.setDisplayHomeAsUpEnabled(true);
+            mActionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel);
+        }
     }
 
+    @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState)
-    {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        return dialog;
+        final Window window = dialog.getWindow();
+
+        if (window != null) {
+            window.getAttributes().windowAnimations = R.style.DialogAnimation;
+            return dialog;
+        } else {
+            return new Dialog(getActivity());
+        }
     }
 
     @Override
@@ -42,15 +59,21 @@ public class FullScreenDialog extends DialogFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+        MainActivity mainActivity = (MainActivity) getActivity();
+        FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
+
         switch (item.getItemId()) {
             case R.id.save:
-                getActivity().getSupportFragmentManager().popBackStack();
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                fragmentManager.popBackStack();
+                mActionBar.setDisplayHomeAsUpEnabled(false);
+                mActionBar.setTitle(R.string.app_name);
+                mainActivity.mNavigation.setVisibility(View.VISIBLE);
                 return true;
             case android.R.id.home:
-                getActivity().getSupportFragmentManager().popBackStack();
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                fragmentManager.popBackStack();
+                mActionBar.setDisplayHomeAsUpEnabled(false);
+                mActionBar.setTitle(R.string.app_name);
+                mainActivity.mNavigation.setVisibility(View.VISIBLE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

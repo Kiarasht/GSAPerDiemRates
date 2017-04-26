@@ -24,7 +24,7 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityAdapterVie
     }
 
     public interface onListItemClick {
-        void onCityListItemClick(int index);
+        void onCityListItemClick(int index, String s);
     }
 
     /**
@@ -47,7 +47,7 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityAdapterVie
 
         @Override
         public void onClick(View v) {
-            mOnListItemClickListener.onCityListItemClick(getAdapterPosition());
+            mOnListItemClickListener.onCityListItemClick(getAdapterPosition(), mCity.getText().toString());
         }
     }
 
