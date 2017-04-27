@@ -1,5 +1,7 @@
 package com.restart.perdiem.adapter;
 
+import android.app.Activity;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +17,16 @@ import java.util.List;
 public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHolder> {
     private final onListItemClick mOnListItemClickListener;
     private List<Place> mDataSet;
+    private Activity mActivity;
 
     /**
      * Initialize adapter by bring some data to create onClick listeners and gain access to resources
      *
      * @param listener for tapping on recyclerview
      */
-    public ZipAdapter(onListItemClick listener) {
+    public ZipAdapter(onListItemClick listener, Activity activity) {
         mOnListItemClickListener = listener;
+        mActivity = activity;
     }
 
     public interface onListItemClick {
@@ -36,6 +40,7 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
         private final TextView mName;
         private final TextView mAddress;
         private final ImageView[] mPrice;
+        private final ImageView[] mRating;
         //private final TextView mLocation;
 
         /**
@@ -52,6 +57,13 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
             mPrice[2] = (ImageView) view.findViewById(R.id.moderate);
             mPrice[3] = (ImageView) view.findViewById(R.id.expensive);
             mPrice[4] = (ImageView) view.findViewById(R.id.veryExpensive);
+
+            mRating = new ImageView[5];
+            mRating[0] = (ImageView) view.findViewById(R.id.bad);
+            mRating[1] = (ImageView) view.findViewById(R.id.poor);
+            mRating[2] = (ImageView) view.findViewById(R.id.okay);
+            mRating[3] = (ImageView) view.findViewById(R.id.good);
+            mRating[4] = (ImageView) view.findViewById(R.id.great);
 
             //mLocation = (TextView) view.findViewById(R.id.location);
             view.setOnClickListener(this);
@@ -89,8 +101,25 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
 
         int priceLevel = mDataSet.get(position).getPriceLevel();
 
-        for (int i = 0; i <= priceLevel; ++i) {
+        for (int i = 0; i < priceLevel; ++i) {
             holder.mPrice[i].setVisibility(View.VISIBLE);
+        }
+
+        float ratingLevel = mDataSet.get(position).getRating();
+
+        if (ratingLevel != -1) {
+            for (int i = 0; i < 5; ++i) {
+                if (ratingLevel >= 1) {
+                    holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star, null));
+                } else if (ratingLevel > 0) {
+                    holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star_half, null));
+                } else {
+                    holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star_border, null));
+                }
+
+                holder.mRating[i].setVisibility(View.VISIBLE);
+                ratingLevel -= 1;
+            }
         }
 
         //holder.mLocation.setText(mDataSet.get(position).getLatLng().toString());

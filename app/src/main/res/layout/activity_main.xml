@@ -9,16 +9,6 @@
     android:orientation="vertical"
     tools:context="com.restart.perdiem.MainActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/locationRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/zipRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
@@ -26,6 +16,24 @@
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/locationRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/navigation"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/zipRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/navigation"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/search"
@@ -42,11 +50,11 @@
         android:id="@+id/zipWarningTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_search_36dp"
-        android:drawableStart="@drawable/ic_search_36dp"
-        android:drawablePadding="8dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:drawableLeft="@drawable/ic_search_36dp"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/ic_search_36dp"
         android:text="@string/zipWarning"/>
 
 </RelativeLayout>

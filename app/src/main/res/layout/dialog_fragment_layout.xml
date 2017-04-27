@@ -4,7 +4,9 @@
               android:layout_height="match_parent"
               android:background="#FFFFFF"
               android:orientation="vertical"
-              android:padding="16dp">
+              android:padding="16dp"
+              android:paddingLeft="16sp"
+              android:paddingStart="16sp">
 
     <EditText
         android:id="@+id/eventName"
@@ -16,7 +18,7 @@
         android:paddingBottom="32dp"
         android:paddingTop="32dp"
         android:textColorHint="@color/textLightGrey"
-        android:textSize="30sp"/>
+        android:textSize="36sp"/>
 
     <EditText
         android:id="@+id/origin"
@@ -55,14 +57,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Spinner
+        <EditText
+            android:focusable="false"
             android:id="@+id/starting_date"
+            style="?android:attr/spinnerStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.65"/>
 
-        <Spinner
+        <EditText
+            android:focusable="false"
             android:id="@+id/starting_time"
+            style="?android:attr/spinnerStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.35"/>
@@ -72,6 +78,7 @@
         android:id="@+id/to"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
         android:paddingTop="16dp"
         android:text="To"
         android:textSize="12sp"/>
@@ -80,14 +87,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Spinner
+        <EditText
+            android:focusable="false"
             android:id="@+id/ending_date"
+            style="?android:attr/spinnerStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.65"/>
 
-        <Spinner
+        <EditText
+            android:focusable="false"
             android:id="@+id/ending_time"
+            style="?android:attr/spinnerStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.35"/>

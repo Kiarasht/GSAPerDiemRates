@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
         mRecyclerState.setAdapter(mState);
 
         mRecyclerZIP.setLayoutManager(zipManager);
-        mZip = new ZipAdapter(this);
+        mZip = new ZipAdapter(this, this);
         mRecyclerZIP.setHasFixedSize(false);
         mZip.setDataSet(mPlaces);
         mRecyclerZIP.setAdapter(mZip);
