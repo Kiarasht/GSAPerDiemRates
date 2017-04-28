@@ -1,10 +1,12 @@
 package com.restart.perdiem;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
     private static final int UNSELECTED = -1;
     private int selectedItem = UNSELECTED;
 
+    private FullScreenDialog mFullScreenDialog;
     private StateAdapter mState;
     private ZipAdapter mZip;
     private RecyclerView mRecyclerState;
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
             return true;
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,14 +196,55 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
     public void onCityListItemClick(int index, String city) {
         Bundle bundle = new Bundle();
         bundle.putString("title", city);
-        FullScreenDialog fullScreenDialog = new FullScreenDialog();
-        fullScreenDialog.setArguments(bundle);
-
+        mFullScreenDialog = new FullScreenDialog();
+        mFullScreenDialog.setArguments(bundle);
         mNavigation.setVisibility(View.GONE);
 
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
-                .add(R.id.container, fullScreenDialog)
-                .addToBackStack(null).commit();
+                .add(R.id.container, mFullScreenDialog)
+                .addToBackStack("FullScreen").commit();
     }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            if (mFullScreenDialog != null && mFullScreenDialog.isVisible()) {
+                mFullScreenDialog.getmActionBar();
+                mFullScreenDialog.getmActionBar().setDisplayHomeAsUpEnabled(false);
+                mFullScreenDialog.getmActionBar().setTitle(R.string.app_name);
+                this.mNavigation.setVisibility(View.VISIBLE);
+            }
+
+            getSupportFragmentManager().popBackStack();
+        } else {
+            AlertDialog.Builder exitDialog = new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.app_name))
+                    .setMessage(R.string.exitConfirm)
+                    .setPositiveButton(R.string.exit, mOnClickListener)
+                    .setNegativeButton(R.string.cancel, mOnClickListener);
+            exitDialog.show();
+        }
+    }
+
+    private DialogInterface.OnClickListener mOnClickListener = new DialogInterface.OnClickListener() {
+        /**
+         * This method will be invoked when a button in the dialog is clicked.
+         *
+         * @param dialog The dialog that received the click.
+         * @param which  The button that was clicked (e.g.
+         *               {@link DialogInterface#BUTTON1}) or the position
+         */
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case AlertDialog.BUTTON_POSITIVE:
+                    finish();
+                    break;
+                case AlertDialog.BUTTON_NEGATIVE:
+                    dialog.dismiss();
+                    break;
+            }
+        }
+    };
 }

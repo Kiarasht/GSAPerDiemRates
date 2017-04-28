@@ -29,9 +29,14 @@ import java.util.Locale;
 
 
 public class FullScreenDialog extends DialogFragment {
-    private DateFormat mDateTimeFormat;
+    private DateTimePickerListener mPickerListener;
     private DateFormat mDateFormat;
     private DateFormat mTimeFormat;
+
+    public ActionBar getmActionBar() {
+        return mActionBar;
+    }
+
     private ActionBar mActionBar;
     private EditText mStartingDate;
     private EditText mStartingTime;
@@ -52,9 +57,9 @@ public class FullScreenDialog extends DialogFragment {
             mActionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel);
         }
 
-        mDateTimeFormat = new SimpleDateFormat("E, MMMM d, yyyy h:mm a", Locale.getDefault());
-        mDateFormat = new SimpleDateFormat("E, MMMM d, yyyy", Locale.getDefault());
-        mTimeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        mPickerListener = new DateTimePickerListener();
+        mDateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
+        mTimeFormat = new SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault());
     }
 
     @NonNull
@@ -95,9 +100,10 @@ public class FullScreenDialog extends DialogFragment {
         mEndingTime.setText(time);
         mEndingTime.setOnClickListener(mOnClickListener);
 
+
+
         return view;
     }
-
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -132,22 +138,23 @@ public class FullScreenDialog extends DialogFragment {
 
             switch (v.getId()) {
                 case R.id.starting_date:
-                    new DatePickerDialog(getActivity(), new DateTimePicker(), year, month, day).show();
+                    new DatePickerDialog(getActivity(), mPickerListener, year, month, day);
                     break;
                 case R.id.starting_time:
-                    new TimePickerDialog(getActivity(), new DateTimePicker(), hour, minute, false).show();
+                    new TimePickerDialog(getActivity(), mPickerListener, hour, minute, false);
                     break;
                 case R.id.ending_date:
-                    new DatePickerDialog(getActivity(), new DateTimePicker(), year, month, day).show();
+                    new DatePickerDialog(getActivity(), mPickerListener, year, month, day);
                     break;
                 case R.id.ending_time:
-                    new TimePickerDialog(getActivity(), new DateTimePicker(), hour, minute, false).show();
+                    new TimePickerDialog(getActivity(), mPickerListener, hour, minute, false);
                     break;
+                default:
             }
         }
     };
 
-    private class DateTimePicker implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+    private class DateTimePickerListener implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
         /**
          * Called when the user is done setting a new date and the dialog has
          * closed.
