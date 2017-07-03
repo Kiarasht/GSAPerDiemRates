@@ -38,6 +38,8 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
     class ZipAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView mName;
         private final TextView mAddress;
+        private final TextView mPhone;
+        private final TextView mWebsite;
         private final ImageView[] mPrice;
         private final ImageView[] mRating;
         private final ImageButton mShare;
@@ -50,6 +52,8 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
             super(view);
             mName = (TextView) view.findViewById(R.id.name);
             mAddress = (TextView) view.findViewById(R.id.address);
+            mPhone = (TextView) view.findViewById(R.id.phone);
+            mWebsite = (TextView) view.findViewById(R.id.website);
 
             mPrice = new ImageView[5];
             mPrice[0] = (ImageView) view.findViewById(R.id.free);
@@ -155,29 +159,54 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
      */
     @Override
     public void onBindViewHolder(ZipAdapterViewHolder holder, int position) {
-        holder.mName.setText(mDataSet.get(position).getName());
-        holder.mAddress.setText(mDataSet.get(position).getAddress());
+        Place current = mDataSet.get(position);
 
-        int priceLevel = mDataSet.get(position).getPriceLevel();
+        if (current != null) {
+            if (current.getName() != null && !current.getName().toString().isEmpty()) {
+                holder.mName.setText(current.getName());
+                holder.mName.setVisibility(View.VISIBLE);
+            }
 
-        for (int i = 0; i < priceLevel; ++i) {
-            holder.mPrice[i].setVisibility(View.VISIBLE);
-        }
+            if (current.getAddress() != null && !current.getAddress().toString().isEmpty()) {
+                holder.mAddress.setText(current.getAddress());
+                holder.mAddress.setVisibility(View.VISIBLE);
+            }
 
-        float ratingLevel = mDataSet.get(position).getRating();
+            if (current.getPriceLevel() != -1) {
+                int priceLevel = current.getPriceLevel();
 
-        if (ratingLevel != -1) {
-            for (int i = 0; i < 5; ++i) {
-                if (ratingLevel >= 1) {
-                    holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star, null));
-                } else if (ratingLevel > 0) {
-                    holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star_half, null));
-                } else {
-                    holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star_border, null));
+                for (int i = 0; i < priceLevel; ++i) {
+                    holder.mPrice[i].setVisibility(View.VISIBLE);
                 }
+            }
 
-                holder.mRating[i].setVisibility(View.VISIBLE);
-                ratingLevel -= 1;
+            if (current.getRating() != -1) {
+                float ratingLevel = current.getRating();
+
+                if (ratingLevel != -1) {
+                    for (int i = 0; i < 5; ++i) {
+                        if (ratingLevel >= 1) {
+                            holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star, null));
+                        } else if (ratingLevel > 0) {
+                            holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star_half, null));
+                        } else {
+                            holder.mRating[i].setImageDrawable(ResourcesCompat.getDrawable(mActivity.getResources(), R.drawable.ic_star_border, null));
+                        }
+
+                        holder.mRating[i].setVisibility(View.VISIBLE);
+                        ratingLevel -= 1;
+                    }
+                }
+            }
+
+            if (current.getPhoneNumber() != null && !current.getAddress().toString().isEmpty()) {
+                holder.mPhone.setText(current.getPhoneNumber());
+                holder.mPhone.setVisibility(View.VISIBLE);
+            }
+
+            if (current.getWebsiteUri() != null && !current.getWebsiteUri().toString().isEmpty()) {
+                holder.mWebsite.setText(current.getWebsiteUri().toString());
+                holder.mWebsite.setVisibility(View.VISIBLE);
             }
         }
     }
