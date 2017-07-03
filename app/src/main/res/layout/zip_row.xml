@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/zip_root_view"
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content"
                                              android:background="?android:attr/selectableItemBackground"
@@ -164,17 +165,6 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/poor"/>
 
-            <TextView
-                android:id="@+id/location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:textSize="12sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/address"/>
-
             <ImageButton
                 android:id="@+id/share"
                 style="@style/Widget.AppCompat.Button.Borderless"
@@ -187,7 +177,7 @@
                 android:adjustViewBounds="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/delete"
-                app:layout_constraintTop_toBottomOf="@+id/location"
+                app:layout_constraintTop_toBottomOf="@+id/address"
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/ic_share"/>
 
@@ -203,7 +193,7 @@
                 android:adjustViewBounds="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/location"
+                app:layout_constraintTop_toBottomOf="@+id/address"
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/ic_delete"/>
 

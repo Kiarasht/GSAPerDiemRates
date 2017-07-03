@@ -92,6 +92,11 @@ public class FullScreenDialog extends DialogFragment {
         mStartingTime.setText(time);
         mStartingTime.setOnClickListener(mOnClickListener);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.add(Calendar.DATE, 1);
+        date = mDateFormat.format(calendar.getTime());
+
         mEndingDate = (EditText) view.findViewById(R.id.ending_date);
         mEndingDate.setText(date);
         mEndingDate.setOnClickListener(mOnClickListener);
@@ -138,16 +143,16 @@ public class FullScreenDialog extends DialogFragment {
 
             switch (v.getId()) {
                 case R.id.starting_date:
-                    new DatePickerDialog(getActivity(), mPickerListener, year, month, day);
+                    new DatePickerDialog(getActivity(), mPickerListener, year, month, day).show();
                     break;
                 case R.id.starting_time:
-                    new TimePickerDialog(getActivity(), mPickerListener, hour, minute, false);
+                    new TimePickerDialog(getActivity(), mPickerListener, hour, minute, false).show();;
                     break;
                 case R.id.ending_date:
-                    new DatePickerDialog(getActivity(), mPickerListener, year, month, day);
+                    new DatePickerDialog(getActivity(), mPickerListener, year, month, day).show();;
                     break;
                 case R.id.ending_time:
-                    new TimePickerDialog(getActivity(), mPickerListener, hour, minute, false);
+                    new TimePickerDialog(getActivity(), mPickerListener, hour, minute, false).show();;
                     break;
                 default:
             }

@@ -1,13 +1,18 @@
 package com.restart.perdiem.adapter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.places.Place;
 import com.restart.perdiem.R;
@@ -15,22 +20,16 @@ import com.restart.perdiem.R;
 import java.util.List;
 
 public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHolder> {
-    private final onListItemClick mOnListItemClickListener;
     private List<Place> mDataSet;
     private Activity mActivity;
+    private ZipAdapter mZipAdapter;
 
     /**
      * Initialize adapter by bring some data to create onClick listeners and gain access to resources
-     *
-     * @param listener for tapping on recyclerview
      */
-    public ZipAdapter(onListItemClick listener, Activity activity) {
-        mOnListItemClickListener = listener;
+    public ZipAdapter(Activity activity) {
         mActivity = activity;
-    }
-
-    public interface onListItemClick {
-        void onAddressListItemClick(int index);
+        mZipAdapter = this;
     }
 
     /**
@@ -41,7 +40,8 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
         private final TextView mAddress;
         private final ImageView[] mPrice;
         private final ImageView[] mRating;
-        //private final TextView mLocation;
+        private final ImageButton mShare;
+        private final ImageButton mDelete;
 
         /**
          * Setup the basic layout of a row in the recycler view. Create both the click and long click listeners.
@@ -65,13 +65,72 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
             mRating[3] = (ImageView) view.findViewById(R.id.good);
             mRating[4] = (ImageView) view.findViewById(R.id.great);
 
-            //mLocation = (TextView) view.findViewById(R.id.location);
+            mShare = (ImageButton) view.findViewById(R.id.share);
+            mDelete = (ImageButton) view.findViewById(R.id.delete);
+            mShare.setOnClickListener(this);
+            mDelete.setOnClickListener(this);
+
             view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            mOnListItemClickListener.onAddressListItemClick(getAdapterPosition());
+            switch (v.getId()) {
+                case R.id.share:
+                    onShare();
+                    break;
+                case R.id.delete:
+                    onDelete();
+                    break;
+                case R.id.zip_root_view:
+                    Toast.makeText(mActivity, "Root", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        private void onShare() {
+            Place current = mDataSet.get(getAdapterPosition());
+
+            String result = current.getId() + "\n" +
+                    current.getAddress() + "\n" +
+                    current.getAttributions() + "\n" +
+                    current.getLatLng() + "\n" +
+                    current.getLocale() + "\n" +
+                    current.getName() + "\n" +
+                    current.getPhoneNumber() + "\n" +
+                    current.getPlaceTypes() + "\n" +
+                    current.getPriceLevel() + "\n" +
+                    current.getRating() + "\n" +
+                    current.getViewport() + "\n" +
+                    current.getWebsiteUri() + "\n";
+
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, result);
+            sendIntent.setType("text/plain");
+            mActivity.startActivity(Intent.createChooser(sendIntent, mActivity.getString(R.string.share)));
+        }
+
+        private void onDelete() {
+            AlertDialog.Builder deleteDialog = new AlertDialog.Builder(mActivity);
+
+            deleteDialog.setTitle(R.string.delete)
+                    .setMessage(mActivity.getString(R.string.delete_message) + " " + mDataSet.get(getAdapterPosition()).getName() + "?")
+                    .setCancelable(false)
+
+                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            mDataSet.remove(getAdapterPosition());
+                            mZipAdapter.notifyItemRemoved(getAdapterPosition());
+                        }
+                    })
+
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            deleteDialog.show();
         }
     }
 
@@ -121,8 +180,6 @@ public class ZipAdapter extends RecyclerView.Adapter<ZipAdapter.ZipAdapterViewHo
                 ratingLevel -= 1;
             }
         }
-
-        //holder.mLocation.setText(mDataSet.get(position).getLatLng().toString());
     }
 
     /**

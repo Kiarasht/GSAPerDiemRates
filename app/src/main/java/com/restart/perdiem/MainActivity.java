@@ -33,7 +33,7 @@ import java.util.List;
 import static com.restart.perdiem.data.PlaceManager.STATES;
 import static com.restart.perdiem.data.PlaceManager.STATE_CITY_MAPPER;
 
-public class MainActivity extends AppCompatActivity implements PlaceSelectionListener, StateAdapter.onListItemClick, ZipAdapter.onListItemClick, CityAdapter.onListItemClick {
+public class MainActivity extends AppCompatActivity implements PlaceSelectionListener, StateAdapter.onListItemClick, CityAdapter.onListItemClick {
 
     private static final String TAG = ".MainActivity";
     private static final int REQUEST_SELECT_PLACE = 9876;
@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
         mRecyclerState.setAdapter(mState);
 
         mRecyclerZIP.setLayoutManager(zipManager);
-        mZip = new ZipAdapter(this, this);
+        mZip = new ZipAdapter(this);
         mRecyclerZIP.setHasFixedSize(false);
         mZip.setDataSet(mPlaces);
         mRecyclerZIP.setAdapter(mZip);
@@ -152,10 +151,10 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
 
     @Override
     public void onPlaceSelected(Place place) {
-        mPlaces.add(place);
+        mPlaces.add(0, place);
         mZipWarning.setVisibility(View.GONE);
         mRecyclerZIP.setVisibility(View.VISIBLE);
-        mZip.notifyItemInserted(mPlaces.size() - 1);
+        mZip.notifyItemInserted(0);
     }
 
     @Override
@@ -185,11 +184,6 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
             holder.mCity.setDataSet(STATE_CITY_MAPPER.get(holder.mState.getText().toString()));
             holder.mRecyclerCity.setAdapter(holder.mCity);
         }
-    }
-
-    @Override
-    public void onAddressListItemClick(int index) {
-
     }
 
     @Override
